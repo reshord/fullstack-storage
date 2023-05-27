@@ -9,4 +9,6 @@ export class CreateUserDto {
 
     @ApiProperty()
     password: string
+
+    test: string
 }
