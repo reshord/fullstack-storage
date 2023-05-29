@@ -15,4 +15,9 @@ export class AuthController {
   async login(@Request() req) {
     return req.user
   }
+
+  @Post('register')
+  async register(@Body() dto: CreateUserDto) {
+    return this.authService.register(dto)
+  }
 }
