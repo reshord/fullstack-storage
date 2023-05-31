@@ -19,7 +19,7 @@ export class FileEntity {
     minetype: string
 
     @ManyToOne(() => UserEntity, (user) => user.files)
-    user: UserEntity[]
+    user: UserEntity
 
     @DeleteDateColumn()
     deletedAt?: Date

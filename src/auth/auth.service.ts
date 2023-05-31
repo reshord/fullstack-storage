@@ -1,14 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private jwtService
+    private jwtService: JwtService
   ) {}
 
   findByEmail(email: string) {
@@ -32,20 +33,22 @@ export class AuthService {
   }
 
   async register(dto: CreateUserDto) {
-    const user = await this.findByEmail(dto.email)
+    try {
 
-    if(user) throw new BadRequestException('Пользователь уже существует')
-    
-    return dto
+      const userData = await this.userService.create(dto)
+
+      return {
+        token: this.jwtService.sign({id: userData.id})
+      }
+
+    } catch(e) {
+      throw new ForbiddenException('Ошибка при регистрации')
+    }
   }
 
   async login(user: UserEntity) {
-    const payload = {
-      id: user.id
-    }
-
     return {
-      token: this.jwtService.
+      token: this.jwtService.sign({id: user.id})
     }
   }
 }
